@@ -123,4 +123,26 @@ const deleteNote = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Note has been deleted successfully"));
 });
 
-export { getAllNotes, getNoteById, createNote, updateNote, deleteNote };
+const exportNote = asyncHandler(async (req, res) => {
+  const notes = await Note.find({ createdBy: req.user._id }).lean();
+  logger.info(
+    {
+      userId: req.user._id,
+      notesCount: notes.length,
+    },
+    "Notes exported successfully",
+  );
+  res.set("Cache-Control", "no-store");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, notes, "Notes exported successfully"));
+});
+
+export {
+  getAllNotes,
+  getNoteById,
+  createNote,
+  updateNote,
+  deleteNote,
+  exportNote,
+};
